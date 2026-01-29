@@ -1,215 +1,226 @@
 # 🎓 REDAS - Sistema Financeiro Escolar
 
-Sistema financeiro completo desenvolvido em Next.js 16 para gestão escolar, com controle de receitas, despesas, contas fixas e reserva de emergência.
+Sistema completo de gestão financeira para instituições de ensino, desenvolvido com Next.js 16, shadcn/ui e Prisma.
 
-![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)
-![Prisma](https://img.shields.io/badge/Prisma-7.3.0-2D3748?logo=prisma)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Latest-336791?logo=postgresql)
+## 🚀 Início Rápido
 
-## 🚀 Tecnologias
-
-- **Framework**: Next.js 16 (App Router + Turbopack)
-- **Linguagem**: TypeScript
-- **Banco de Dados**: PostgreSQL (Prisma ORM)
-- **UI Components**: shadcn/ui
-- **Estilização**: Tailwind CSS v4
-- **Autenticação**: Session-based com cookies
-- **Gráficos**: Recharts
-
-## ✨ Funcionalidades
-
-### 🔐 Autenticação
-- Login seguro com email e senha
-- 3 usuários administradores configurados
-- Sessão criptografada com cookies HTTP-only
-
-### 💰 Gestão Financeira
-- **Dashboard Completo**: Visão geral com cards animados
-- **Receitas**: Cadastro com categorias e formas de pagamento
-- **Despesas**: Gestão completa com status e vencimentos
-- **Contas Fixas Recorrentes**: Internet, Alarme, Segurança, Aluguel
-- **Reserva de Emergência**: Configurável com meta e progresso
-
-### 📊 Relatórios
-- Balanço mensal e anual
-- Filtros por período (Janeiro a Dezembro + Ano Completo)
-- Indicadores de tendência
-- Alertas de contas atrasadas
-
-### 🎨 Interface Moderna
-- Sidebar fixa com navegação
-- Cards com gradientes e animações
-- Tabelas interativas com busca
-- Hover effects e micro-interações
-- Design responsivo
-
-## 🛠️ Instalação
-
-### Pré-requisitos
-- Node.js 18+
-- PostgreSQL ou conta no Prisma.io
-
-### Passo a Passo
-
-1. **Clone o repositório**
-```bash
-git clone https://github.com/joaodiasft/Financeiro.git
-cd Financeiro
-```
-
-2. **Instale as dependências**
+### 1. Instalar Dependências
 ```bash
 npm install
 ```
 
-3. **Configure o banco de dados**
-
-Crie um arquivo `.env` na raiz:
-```env
-DATABASE_URL="sua-connection-string-postgresql"
-AUTH_SECRET="seu-secret-aleatorio-de-32-caracteres"
-```
-
-4. **Configure o Prisma**
+### 2. Configurar Banco de Dados
 ```bash
 npm run prisma:generate
-npx prisma db push
+npm run prisma:push
 npm run prisma:seed
 ```
 
-5. **Inicie o servidor**
+### 3. Iniciar Servidor
 ```bash
 npm run dev
 ```
 
-Acesse: http://localhost:3000
+### 4. Acessar Sistema
+Abra: **http://localhost:3000**
 
-## 👥 Credenciais de Login
+## 🔐 Credenciais de Acesso
 
-| Email | Senha |
-|-------|-------|
-| jc@redas.com | jc29 |
-| ma@redas.com | ma19 |
-| cl@redas.com | cl07 |
+| Email | Senha | Nome |
+|-------|-------|------|
+| jc@redas.com | jc29 | Administrador JC |
+| ma@redas.com | ma19 | Administrador MA |
+| cl@redas.com | cl07 | Administrador CL |
 
-## 💳 Contas Fixas Pré-configuradas
+## 💰 Despesas Fixas Mensais (2026)
 
-| Conta | Valor | Vencimento |
-|-------|-------|------------|
-| Internet | R$ 110,00 | Dia 05 |
-| Alarme | R$ 140,00 | Dia 05 |
-| Segurança | R$ 50,00 | Dia 05 |
-| Aluguel | R$ 1.100,00 | Dia 10 |
+O sistema cria automaticamente despesas fixas para todos os 12 meses:
 
-**Total Mensal**: R$ 1.400,00
+| Descrição | Valor | Vencimento |
+|-----------|-------|------------|
+| Internet Vivo Fibra | R$ 110,00 | Dia 5 |
+| Alarme Monitorado | R$ 140,00 | Dia 5 |
+| Segurança Patrimonial | R$ 50,00 | Dia 5 |
+| Aluguel do Imóvel | R$ 1.100,00 | Dia 10 |
+
+**Total Mensal**: R$ 1.400,00  
+**Total Anual**: R$ 16.800,00
+
+## 📊 Funcionalidades
+
+### Dashboard Completo
+- **Ano Completo**: Resumo geral com cards totais
+- **Por Mês**: Visão detalhada com:
+  - 4 cards principais (Receitas, Despesas Pagas, Pendentes, Saldo)
+  - Card de Reserva de Emergência
+  - Tabela de despesas com botão "Pagar"
+  - Tabela de receitas
+
+### Adicionar Movimentações
+- **Nova Receita** (botão verde):
+  - Categorias: Matrícula, Mensalidade, Taxa Extra, etc.
+  - Valor, data de recebimento, método de pagamento
+  
+- **Nova Despesa** (botão vermelho):
+  - Categorias: Aluguel, Salários, Materiais, etc.
+  - Valor, vencimento, fornecedor, método
+  - Opção de marcar como paga ao criar
+
+### Reserva de Emergência
+- Bloqueio de valor para emergências
+- Meta configurável
+- Saldo disponível = Saldo Total - Reserva
+- Barra de progresso visual
+
+### Sistema de Pagamento
+- Despesas marcadas como:
+  - **Pago** (verde): despesa quitada
+  - **Pendente** (laranja): dentro do prazo
+  - **Atrasado** (vermelho pulsante): vencimento ultrapassado
+- Botão "Pagar" para marcar despesa como paga
+
+## 🛠️ Tecnologias
+
+- **Next.js 16** (App Router + Turbopack)
+- **shadcn/ui** (Componentes UI)
+- **Prisma 7** (ORM)
+- **PostgreSQL** (Banco de dados Prisma Cloud)
+- **TypeScript**
+- **Tailwind CSS**
+- **bcrypt** (Hash de senhas)
 
 ## 📁 Estrutura do Projeto
 
 ```
-├── prisma/
-│   ├── schema.prisma      # Modelos do banco
-│   └── seed.ts            # Dados iniciais
+fina-redas/
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/        # Páginas de autenticação
-│   │   ├── (protected)/   # Páginas protegidas
-│   │   └── api/           # API Routes
+│   │   ├── (auth)/
+│   │   │   └── login/          # Página de login
+│   │   ├── (protected)/
+│   │   │   └── dashboard/      # Dashboard principal (única página)
+│   │   └── api/
+│   │       ├── auth/           # Login/Logout
+│   │       ├── balance/        # Cálculo de saldo
+│   │       ├── expenses/       # CRUD de despesas
+│   │       ├── revenues/       # CRUD de receitas
+│   │       └── financial-settings/  # Reserva de emergência
 │   ├── components/
-│   │   ├── ui/            # Componentes shadcn/ui
-│   │   └── ...            # Componentes customizados
-│   └── lib/
-│       ├── prisma.ts      # Cliente Prisma
-│       ├── auth.ts        # Funções de autenticação
-│       └── ...
-└── scripts/
-    └── reset-db.ts        # Script de reset do banco
+│   │   ├── ui/                 # Componentes shadcn
+│   │   ├── app-sidebar.tsx     # Sidebar moderna
+│   │   ├── login-form.tsx      # Formulário de login
+│   │   ├── add-revenue-dialog.tsx
+│   │   └── add-expense-dialog.tsx
+│   ├── lib/
+│   │   ├── auth.ts             # Autenticação
+│   │   ├── session.ts          # Gestão de sessão
+│   │   ├── prisma.ts           # Cliente Prisma
+│   │   └── format.ts           # Formatação de moeda/data
+│   └── proxy.ts                # Proteção de rotas (Next.js 16)
+├── prisma/
+│   ├── schema.prisma           # Schema do banco
+│   ├── seed.ts                 # Dados iniciais
+│   └── prisma.config.ts        # Config Prisma 7
+└── package.json
 ```
 
-## 🔄 Scripts Disponíveis
+## 🔄 Comandos Úteis
 
 ```bash
 # Desenvolvimento
 npm run dev
 
-# Build
+# Build de produção
 npm run build
 
 # Prisma
-npm run prisma:generate  # Gera o Prisma Client
-npm run prisma:seed      # Popula o banco
+npm run prisma:generate    # Gerar Prisma Client
+npm run prisma:push        # Sincronizar schema
+npm run prisma:seed        # Popular banco inicial
+npm run prisma:studio      # Interface visual do banco
 
-# Reset completo do banco
-npx tsx scripts/reset-db.ts
+# Resetar banco (cuidado!)
+npm run db:reset
+```
+
+## ⚙️ Configuração
+
+### Variáveis de Ambiente (.env)
+```env
+DATABASE_URL="sua-connection-string-aqui"
+AUTH_SECRET="seu-secret-aqui"
+```
+
+## 🎯 Características Especiais
+
+### Cálculo de Saldo Preciso
+- Receitas: soma de todas as receitas recebidas no período
+- Despesas Pagas: soma de despesas pagas no período
+- Despesas Pendentes: soma de despesas não pagas com vencimento no período
+- **Saldo = Receitas - Despesas Pagas**
+
+### Reserva de Emergência
+- Valor bloqueado separado do saldo operacional
+- Meta configurável
+- Progresso visual em %
+- Saldo disponível considerando reserva
+
+### Responsividade
+- Layout adaptativo para desktop, tablet e mobile
+- Sidebar fixa em desktop
+- Cards com grid responsivo
+- Tabelas com scroll horizontal em telas pequenas
+
+## 📝 Notas de Desenvolvimento
+
+### Migração Next.js 16
+- Arquivos `middleware.ts` foram substituídos por `proxy.ts`
+- Função exportada deve se chamar `proxy` (não `middleware`)
+- Configuração de matcher permanece a mesma
+
+### Prisma 7
+- `DATABASE_URL` movida de `schema.prisma` para `prisma.config.ts`
+- Uso de adapter `PrismaPg` para PostgreSQL
+- Decimal convertido para Number para exibição
+
+## 🐛 Troubleshooting
+
+### Erro 401 (Não Autorizado)
+1. Limpe os cookies do navegador
+2. Acesse em modo anônimo
+3. Faça login novamente
+
+### Servidor não inicia
+```bash
+taskkill /F /IM node.exe
+Remove-Item -Recurse -Force .next
+npm run dev
+```
+
+### Banco de dados dessincronizado
+```bash
+npm run prisma:push
 npm run prisma:seed
 ```
 
-## 📊 Modelos do Banco
+## 📊 Status do Projeto
 
-- **User**: Usuários administradores
-- **Revenue**: Receitas
-- **Expense**: Despesas
-- **RecurringBill**: Contas fixas recorrentes
-- **FinancialSettings**: Configurações (reserva de emergência)
-- **Student**: Alunos
-- **Enrollment**: Matrículas
-- **Tuition**: Mensalidades
-- **Scholarship**: Bolsas
-- **Discount**: Descontos
-- **AccountReceivable**: Contas a receber
-- **AccountPayable**: Contas a pagar
-- **Report**: Relatórios
-- **SystemLog**: Logs do sistema
+✅ **Sistema 100% Funcional**
+- [x] Autenticação com 3 usuários
+- [x] Dashboard único e completo
+- [x] Visão anual resumida
+- [x] Visão mensal detalhada
+- [x] Despesas fixas automáticas (2026)
+- [x] Reserva de emergência
+- [x] Adicionar receitas/despesas
+- [x] Marcar despesas como pagas
+- [x] Interface moderna e responsiva
+- [x] Sistema de segurança robusto
 
-## 🎨 Componentes Principais
+## 📧 Suporte
 
-### Cards Modernos
-- `ModernBalanceCard`: Cards com gradientes e animações
-- `EmergencyReserveCard`: Card de reserva de emergência
-
-### Tabelas Interativas
-- `ModernExpensesTable`: Tabela de despesas com busca e filtros
-- `RevenuesList`: Lista de receitas
-
-### Diálogos
-- `AddRevenueDialog`: Formulário de nova receita
-- `AddExpenseDialog`: Formulário de nova despesa
-
-## 🔒 Segurança
-
-- Autenticação baseada em sessão
-- Cookies HTTP-only e Secure
-- Middleware de proteção de rotas
-- Logs de auditoria no sistema
-- Senhas hasheadas com bcrypt
-
-## 📱 Responsividade
-
-O sistema é totalmente responsivo e se adapta a:
-- Desktop (1280px+)
-- Tablet (768px - 1279px)
-- Mobile (< 768px)
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT.
-
-## 👨‍💻 Autor
-
-**João Dias**
-
-- GitHub: [@joaodiasft](https://github.com/joaodiasft)
-
----
-
-⭐ Se este projeto te ajudou, considere dar uma estrela!
+Para dúvidas ou problemas, verifique:
+1. Servidor rodando em http://localhost:3000
+2. Banco de dados conectado
+3. Cookies habilitados no navegador
+4. Console do navegador para erros JavaScript

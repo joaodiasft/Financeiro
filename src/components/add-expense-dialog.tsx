@@ -1,75 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingDown, Loader2 } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 
 interface AddExpenseDialogProps {
-  onSuccess?: () => void;
+  onSuccess: () => void;
 }
-
-const expenseCategories = [
-  { value: "SALARIOS", label: "Salários" },
-  { value: "ALUGUEL", label: "Aluguel" },
-  { value: "MATERIAIS", label: "Materiais" },
-  { value: "AGUA_LUZ_INTERNET", label: "Água, Luz e Internet" },
-  { value: "MARKETING", label: "Marketing" },
-  { value: "MANUTENCAO", label: "Manutenção" },
-  { value: "OPERACIONAL", label: "Operacional" },
-  { value: "OUTROS", label: "Outros" },
-];
-
-const paymentMethods = [
-  { value: "dinheiro", label: "Dinheiro" },
-  { value: "pix", label: "PIX" },
-  { value: "cartao_credito", label: "Cartão de Crédito" },
-  { value: "cartao_debito", label: "Cartão de Débito" },
-  { value: "transferencia", label: "Transferência Bancária" },
-  { value: "boleto", label: "Boleto" },
-];
 
 export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    category: "",
+    category: "OPERACIONAL",
     description: "",
     amount: "",
     dueDate: new Date().toISOString().split("T")[0],
     vendor: "",
-    paymentMethod: "",
-    paidAt: "",
+    paymentMethod: "PIX",
+    paidAt: "", // Opcional
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
-    if (!formData.category || !formData.description || !formData.amount || !formData.dueDate) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -77,33 +43,29 @@ export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          category: formData.category,
-          description: formData.description,
+          ...formData,
           amount: parseFloat(formData.amount),
-          dueDate: new Date(formData.dueDate).toISOString(),
-          vendor: formData.vendor || null,
-          paymentMethod: formData.paymentMethod || null,
-          paidAt: formData.paidAt ? new Date(formData.paidAt).toISOString() : null,
+          paidAt: formData.paidAt || null,
+          status: formData.paidAt ? "PAGO" : "PENDENTE",
         }),
       });
 
-      if (response.ok) {
-        setFormData({
-          category: "",
-          description: "",
-          amount: "",
-          dueDate: new Date().toISOString().split("T")[0],
-          vendor: "",
-          paymentMethod: "",
-          paidAt: "",
-        });
-        setOpen(false);
-        onSuccess?.();
-      } else {
-        setError("Erro ao adicionar despesa");
-      }
-    } catch (err) {
-      setError("Erro ao adicionar despesa");
+      if (!response.ok) throw new Error("Erro ao criar despesa");
+
+      setOpen(false);
+      setFormData({
+        category: "OPERACIONAL",
+        description: "",
+        amount: "",
+        dueDate: new Date().toISOString().split("T")[0],
+        vendor: "",
+        paymentMethod: "PIX",
+        paidAt: "",
+      });
+      onSuccess();
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao criar despesa");
     } finally {
       setLoading(false);
     }
@@ -112,171 +74,146 @@ export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50">
-          <TrendingDown className="h-4 w-4 mr-2" />
-          Lançar Despesa
+        <Button className="gap-2 bg-red-600 hover:bg-red-700">
+          <PlusCircle className="h-4 w-4" />
+          Nova Despesa
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Lançar Nova Despesa</DialogTitle>
-          <DialogDescription>
-            Adicione uma nova saída financeira ao sistema
-          </DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="category">
-              Categoria <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
-              }
-            >
-              <SelectTrigger id="category">
-                <SelectValue placeholder="Selecione a categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                {expenseCategories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">
-              Descrição <span className="text-red-500">*</span>
-            </Label>
-            <Textarea
-              id="description"
-              placeholder="Ex: Compra de material escolar"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={3}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">
-                Valor (R$) <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0,00"
-                value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="dueDate">
-                Data de Vencimento <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, dueDate: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="vendor">Fornecedor/Beneficiário</Label>
-            <Input
-              id="vendor"
-              placeholder="Ex: Papelaria Central"
-              value={formData.vendor}
-              onChange={(e) =>
-                setFormData({ ...formData, vendor: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Adicionar Despesa</DialogTitle>
+            <DialogDescription>
+              Registre uma nova saída financeira
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="category">Categoria</Label>
               <Select
-                value={formData.paymentMethod}
+                value={formData.category}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, paymentMethod: value })
+                  setFormData({ ...formData, category: value })
                 }
               >
-                <SelectTrigger id="paymentMethod">
-                  <SelectValue placeholder="Selecione" />
+                <SelectTrigger>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {paymentMethods.map((method) => (
-                    <SelectItem key={method.value} value={method.value}>
-                      {method.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="ALUGUEL">Aluguel</SelectItem>
+                  <SelectItem value="SALARIOS">Salários</SelectItem>
+                  <SelectItem value="MATERIAIS">Materiais</SelectItem>
+                  <SelectItem value="AGUA_LUZ_INTERNET">Água/Luz/Internet</SelectItem>
+                  <SelectItem value="MARKETING">Marketing</SelectItem>
+                  <SelectItem value="MANUTENCAO">Manutenção</SelectItem>
+                  <SelectItem value="OPERACIONAL">Operacional</SelectItem>
+                  <SelectItem value="OUTROS">Outros</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="paidAt">Data de Pagamento</Label>
-              <Input
-                id="paidAt"
-                type="date"
-                value={formData.paidAt}
+            <div className="grid gap-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
                 onChange={(e) =>
-                  setFormData({ ...formData, paidAt: e.target.value })
+                  setFormData({ ...formData, description: e.target.value })
                 }
+                placeholder="Ex: Internet Vivo Fibra - Janeiro 2026"
+                required
               />
-              <p className="text-xs text-muted-foreground">
-                Deixe em branco se ainda não foi pago
-              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="amount">Valor (R$)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.amount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: e.target.value })
+                  }
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="dueDate">Vencimento</Label>
+                <Input
+                  id="dueDate"
+                  type="date"
+                  value={formData.dueDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, dueDate: e.target.value })
+                  }
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="vendor">Fornecedor/Beneficiário</Label>
+              <Input
+                id="vendor"
+                value={formData.vendor}
+                onChange={(e) =>
+                  setFormData({ ...formData, vendor: e.target.value })
+                }
+                placeholder="Nome do fornecedor"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="paymentMethod">Método</Label>
+                <Select
+                  value={formData.paymentMethod}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, paymentMethod: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PIX">PIX</SelectItem>
+                    <SelectItem value="DINHEIRO">Dinheiro</SelectItem>
+                    <SelectItem value="CARTAO_CREDITO">Cartão de Crédito</SelectItem>
+                    <SelectItem value="CARTAO_DEBITO">Cartão de Débito</SelectItem>
+                    <SelectItem value="BOLETO">Boleto</SelectItem>
+                    <SelectItem value="TRANSFERENCIA">Transferência</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="paidAt">Pago em (opcional)</Label>
+                <Input
+                  id="paidAt"
+                  type="date"
+                  value={formData.paidAt}
+                  onChange={(e) =>
+                    setFormData({ ...formData, paidAt: e.target.value })
+                  }
+                />
+              </div>
             </div>
           </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={loading}
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                "Salvar Despesa"
-              )}
+            <Button type="submit" disabled={loading} className="bg-red-600 hover:bg-red-700">
+              {loading ? "Salvando..." : "Salvar"}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
