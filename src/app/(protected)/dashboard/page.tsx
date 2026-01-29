@@ -9,6 +9,7 @@ import { RevenuesList } from "@/components/revenues-list";
 import { AddRevenueDialog } from "@/components/add-revenue-dialog";
 import { AddExpenseDialog } from "@/components/add-expense-dialog";
 import { EmergencyReserveCard } from "@/components/emergency-reserve-card";
+import { AnnualSummary } from "@/components/annual-summary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Calendar as CalendarIcon } from "lucide-react";
 
@@ -50,6 +51,7 @@ export default function DashboardPage() {
   const [revenues, setRevenues] = useState<Revenue[]>([]);
   const [emergencyReserve, setEmergencyReserve] = useState(0);
   const [emergencyReserveGoal, setEmergencyReserveGoal] = useState(0);
+  const [monthlyData, setMonthlyData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const months = [
@@ -72,23 +74,52 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const month = selectedMonth === "all" ? "" : selectedMonth;
+      
+      // Buscar balanço do período
       const balanceRes = await fetch(
         `/api/balance?year=2026${month ? `&month=${month}` : ""}`
       );
       const balanceJson = await balanceRes.json();
       setBalanceData(balanceJson);
 
+      // Buscar despesas do período
       const expensesRes = await fetch(
         `/api/expenses?year=2026${month ? `&month=${month}` : ""}`
       );
       const expensesJson = await expensesRes.json();
       setExpenses(expensesJson);
 
+      // Buscar receitas do período
       const revenuesRes = await fetch(
         `/api/revenues?year=2026${month ? `&month=${month}` : ""}`
       );
       const revenuesJson = await revenuesRes.json();
       setRevenues(revenuesJson);
+
+      // Se for visualização anual, buscar dados de cada mês
+      if (selectedMonth === "all") {
+        const monthlyPromises = months.slice(1).map(async (m) => {
+          const balRes = await fetch(`/api/balance?year=2026&month=${m.value}`);
+          const balData = await balRes.json();
+          
+          const expRes = await fetch(`/api/expenses?year=2026&month=${m.value}`);
+          const expData = await expRes.json();
+          
+          const expensesPending = expData.filter((e: any) => e.status !== "PAGO").length;
+          
+          return {
+            month: m.label,
+            revenues: balData.totalRevenues || 0,
+            expenses: balData.totalExpensesPaid + balData.totalExpensesPending || 0,
+            balance: balData.balance || 0,
+            expensesPaid: balData.totalExpensesPaid || 0,
+            expensesPending,
+          };
+        });
+        
+        const monthlyResults = await Promise.all(monthlyPromises);
+        setMonthlyData(monthlyResults);
+      }
 
       const settingsRes = await fetch("/api/financial-settings");
       const settingsJson = await settingsRes.json();
@@ -155,49 +186,64 @@ export default function DashboardPage() {
             </div>
           ) : balanceData ? (
             <>
-              <ModernBalanceCard data={balanceData} />
+              {selectedMonth === "all" ? (
+                /* Visão Anual - Apenas Resumo */
+                <AnnualSummary
+                  totalRevenues={balanceData.totalRevenues}
+                  totalExpenses={balanceData.totalExpensesPaid + balanceData.totalExpensesPending}
+                  totalBalance={balanceData.balance}
+                  monthlyData={monthlyData}
+                />
+              ) : (
+                /* Visão Mensal - Detalhes Completos */
+                <>
+                  <ModernBalanceCard data={balanceData} />
 
-              <div className="grid gap-6 md:grid-cols-3">
-                <div className="md:col-span-1">
-                  <EmergencyReserveCard
-                    reserve={emergencyReserve}
-                    goal={emergencyReserveGoal}
-                    availableBalance={balanceData.balance - emergencyReserve}
-                    onUpdate={fetchData}
-                  />
-                </div>
-              </div>
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <div className="md:col-span-1">
+                      <EmergencyReserveCard
+                        reserve={emergencyReserve}
+                        goal={emergencyReserveGoal}
+                        availableBalance={balanceData.balance - emergencyReserve}
+                        onUpdate={fetchData}
+                      />
+                    </div>
+                  </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <span>Despesas - {monthName}</span>
-                    <span className="text-sm font-normal text-muted-foreground">
-                      ({expenses.length} registros)
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ModernExpensesTable
-                    expenses={expenses}
-                    onPaymentUpdate={fetchData}
-                  />
-                </CardContent>
-              </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <span>Despesas - {monthName}</span>
+                        <span className="text-sm font-normal text-muted-foreground">
+                          ({expenses.length} registros)
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ModernExpensesTable
+                        expenses={expenses}
+                        onPaymentUpdate={fetchData}
+                      />
+                    </CardContent>
+                  </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <span>Receitas - {monthName}</span>
-                    <span className="text-sm font-normal text-muted-foreground">
-                      ({revenues.length} registros)
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RevenuesList revenues={revenues} />
-                </CardContent>
-              </Card>
+                  {revenues.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <span>Receitas - {monthName}</span>
+                          <span className="text-sm font-normal text-muted-foreground">
+                            ({revenues.length} registros)
+                          </span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <RevenuesList revenues={revenues} />
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
             </>
           ) : (
             <Alert>
