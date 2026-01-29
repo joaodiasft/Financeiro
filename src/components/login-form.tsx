@@ -20,26 +20,35 @@ export default function LoginForm() {
     setError(null);
     setIsLoading(true);
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      // Limpar qualquer sessão antiga antes de fazer novo login
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    setIsLoading(false);
+      setIsLoading(false);
 
-    if (!response.ok) {
-      let message = "Não foi possível autenticar.";
-      const contentType = response.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        const data = (await response.json()) as { error?: string };
-        message = data.error ?? message;
+      if (!response.ok) {
+        let message = "Não foi possível autenticar.";
+        const contentType = response.headers.get("content-type") ?? "";
+        if (contentType.includes("application/json")) {
+          const data = (await response.json()) as { error?: string };
+          message = data.error ?? message;
+        }
+        setError(message);
+        return;
       }
-      setError(message);
-      return;
-    }
 
-    router.replace("/dashboard");
+      // Login bem-sucedido - forçar reload completo para carregar nova sessão
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setIsLoading(false);
+      setError("Erro de conexão. Verifique se o servidor está rodando.");
+    }
   };
 
   return (

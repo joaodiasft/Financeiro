@@ -16,6 +16,12 @@ export async function proxy(request: NextRequest) {
 
   // Rotas públicas (login e root)
   if (publicRoutes.some((route) => pathname === route)) {
+    // Se for a raiz "/", sempre permitir passar (vai limpar sessão)
+    if (pathname === "/") {
+      return NextResponse.next();
+    }
+    
+    // Para /login, verificar se já está autenticado
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE)?.value;
     const session = verifySessionToken(token);
