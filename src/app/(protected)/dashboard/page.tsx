@@ -362,7 +362,7 @@ export default function DashboardPage() {
                     <h2 className="text-2xl font-bold">{monthName} 2026</h2>
 
                     {/* Cards Principais do Mês */}
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
                       <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white hover:scale-105 transition-transform">
                         <CardHeader className="pb-2">
                           <CardTitle className="text-sm font-medium flex items-center justify-between">
@@ -414,45 +414,22 @@ export default function DashboardPage() {
                           <p className="text-xs text-white/80 mt-1">Receitas - Despesas</p>
                         </CardContent>
                       </Card>
-                    </div>
 
-                    {/* Reserva de Emergência */}
+                      {/* Reserva de Emergência - Simplificado */}
                     {settings && (
-                      <Card className="border-yellow-200 bg-yellow-50/50">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-yellow-800">
+                      <Card className="bg-gradient-to-br from-yellow-500 to-amber-600 text-white hover:scale-105 transition-transform">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium flex items-center justify-between">
+                            <span>Reserva de Emergência</span>
                             <CircleDollarSign className="h-5 w-5" />
-                            Reserva de Emergência
                           </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="grid gap-4 md:grid-cols-3">
-                            <div>
-                              <p className="text-sm text-muted-foreground">Reserva Atual</p>
-                              <p className="text-2xl font-bold text-yellow-700">{formatCurrency(settings.emergencyReserve)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Meta</p>
-                              <p className="text-2xl font-bold text-yellow-700">{formatCurrency(settings.emergencyReserveGoal)}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-muted-foreground">Saldo Livre</p>
-                              <p className="text-2xl font-bold text-blue-700">{formatCurrency(availableBalance)}</p>
-                            </div>
-                          </div>
-                          <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-yellow-500 transition-all"
-                              style={{ 
-                                width: `${settings.emergencyReserveGoal > 0 
-                                  ? Math.min((settings.emergencyReserve / settings.emergencyReserveGoal) * 100, 100) 
-                                  : 0}%` 
-                              }}
-                            />
-                          </div>
+                        <CardContent>
+                          <div className="text-3xl font-bold">{formatCurrency(settings.emergencyReserve)}</div>
+                          <p className="text-xs text-white/80 mt-1">Bloqueado para emergências</p>
                         </CardContent>
                       </Card>
-                    )}
+                    </div>
 
                     {/* Tabela de Despesas */}
                     <Card>
