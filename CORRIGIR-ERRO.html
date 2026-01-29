@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrigir Erro 401</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        .problem {
+            background: #fee;
+            border-left: 4px solid #f44;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .solution {
+            background: #efe;
+            border-left: 4px solid #4f4;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .big-button {
+            font-size: 20px;
+            padding: 20px 40px;
+            margin: 20px auto;
+            display: block;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Como Corrigir o Erro 401</h1>
+        
+        <div class="problem">
+            <h2>❌ Problema Identificado:</h2>
+            <p>Você tem uma <strong>sessão antiga</strong> com um usuário que não existe mais no banco de dados!</p>
+            <p>User ID antigo: <code>cmkzor4uv00007s0yfhjgs4v5</code></p>
+            <p>Por isso as APIs retornam erro 401 (Não Autorizado).</p>
+        </div>
+
+        <div class="solution">
+            <h2>✅ Solução:</h2>
+            <p>Limpar os cookies antigos e fazer login novamente com os novos usuários.</p>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 40px;">📋 Siga os Passos:</h2>
+
+        <div class="step">
+            <h3>1️⃣ Método Automático (MAIS FÁCIL)</h3>
+            <p>Clique no botão abaixo que vai fazer tudo automaticamente:</p>
+            <button class="big-button" onclick="limparELogar()">
+                🚀 LIMPAR TUDO E IR PARA LOGIN
+            </button>
+            <p style="color: #666; font-size: 14px;">
+                Este botão vai limpar cookies, localStorage, sessionStorage e te levar para a tela de login.
+            </p>
+        </div>
+
+        <div class="step">
+            <h3>2️⃣ Método Manual</h3>
+            <p><strong>Passo 1:</strong> Abra o site do sistema:</p>
+            <div class="code-block">http://localhost:3000</div>
+            
+            <p><strong>Passo 2:</strong> Pressione <span class="highlight">F12</span> para abrir o DevTools</p>
+            
+            <p><strong>Passo 3:</strong> Vá na aba <span class="highlight">Console</span></p>
+            
+            <p><strong>Passo 4:</strong> Cole este código e pressione Enter:</p>
+            <div class="code-block" id="codigo">document.cookie.split(';').forEach(c => document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/'));
+localStorage.clear();
+sessionStorage.clear();
+location.href='/login';</div>
+            <button onclick="copiarCodigo()">📋 Copiar Código</button>
+        </div>
+
+        <div class="step">
+            <h3>3️⃣ Fazer Login</h3>
+            <p>Após limpar, use uma destas credenciais:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                    <strong>Usuário JC</strong><br>
+                    Email: <code>jc@redas.com</code><br>
+                    Senha: <code>jc29</code>
+                </div>
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                    <strong>Usuário MA</strong><br>
+                    Email: <code>ma@redas.com</code><br>
+                    Senha: <code>ma19</code>
+                </div>
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px;">
+                    <strong>Usuário CL</strong><br>
+                    Email: <code>cl@redas.com</code><br>
+                    Senha: <code>cl07</code>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-top: 30px; text-align: center;">
+            <h3>✨ Depois de fazer login, você verá:</h3>
+            <ul style="text-align: left; display: inline-block;">
+                <li>✅ Dashboard com 13 abas (Ano Completo + 12 meses)</li>
+                <li>✅ 4 cards coloridos mostrando Receitas, Despesas, Saldo</li>
+                <li>✅ Tabelas de despesas fixas (Internet, Alarme, Segurança, Aluguel)</li>
+                <li>✅ Botões para adicionar receitas e despesas</li>
+                <li>✅ Sem erros 401!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function limparELogar() {
+            // Limpar tudo
+            document.cookie.split(';').forEach(c => {
+                document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+            });
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Redirecionar
+            alert('✅ Cookies limpos! Redirecionando para o login...');
+            window.location.href = 'http://localhost:3000/login';
+        }
+
+        function copiarCodigo() {
+            const codigo = document.getElementById('codigo').textContent;
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert('✅ Código copiado! Cole no Console (F12) e pressione Enter.');
+            });
+        }
+    </script>
+</body>
+</html>
