@@ -90,8 +90,29 @@ export default function DashboardPage() {
         fetch("/api/financial-settings"),
       ]);
 
-      if (!balanceRes.ok || !expensesRes.ok || !revenuesRes.ok || !settingsRes.ok) {
-        throw new Error("Erro ao carregar dados");
+      // Verificar qual API falhou
+      if (!balanceRes.ok) {
+        const errorData = await balanceRes.json().catch(() => ({}));
+        console.error("Balance API error:", balanceRes.status, errorData);
+        throw new Error(`Erro ao carregar balanço (${balanceRes.status}). Por favor, faça login novamente.`);
+      }
+      
+      if (!expensesRes.ok) {
+        const errorData = await expensesRes.json().catch(() => ({}));
+        console.error("Expenses API error:", expensesRes.status, errorData);
+        throw new Error(`Erro ao carregar despesas (${expensesRes.status}). Por favor, faça login novamente.`);
+      }
+      
+      if (!revenuesRes.ok) {
+        const errorData = await revenuesRes.json().catch(() => ({}));
+        console.error("Revenues API error:", revenuesRes.status, errorData);
+        throw new Error(`Erro ao carregar receitas (${revenuesRes.status}). Por favor, faça login novamente.`);
+      }
+      
+      if (!settingsRes.ok) {
+        const errorData = await settingsRes.json().catch(() => ({}));
+        console.error("Settings API error:", settingsRes.status, errorData);
+        throw new Error(`Erro ao carregar configurações (${settingsRes.status}). Por favor, faça login novamente.`);
       }
 
       const balance = await balanceRes.json();
@@ -104,8 +125,8 @@ export default function DashboardPage() {
       setRevenues(Array.isArray(rev) ? rev : []);
       setSettings(sett);
     } catch (err) {
-      console.error("Erro:", err);
-      setError("Erro ao carregar dados. Verifique sua autenticação.");
+      console.error("Erro ao carregar dados:", err);
+      setError(err instanceof Error ? err.message : "Erro ao carregar dados. Por favor, faça login novamente.");
     } finally {
       setLoading(false);
     }
@@ -157,9 +178,24 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 space-y-4">
         <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription className="space-y-3">
+            <p className="font-semibold">{error}</p>
+            <p className="text-sm">
+              Isso geralmente acontece quando sua sessão expirou ou você precisa fazer login novamente.
+            </p>
+            <Button 
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                window.location.href = "/login";
+              }}
+              variant="outline"
+              className="mt-2"
+            >
+              Ir para Login
+            </Button>
+          </AlertDescription>
         </Alert>
       </div>
     );
